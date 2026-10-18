@@ -363,9 +363,9 @@ def main():
     p.add_argument("--zone", help="zone name or id (default: first)")
     sp = p.add_subparsers(dest="cmd", required=True)
 
-    sp.add_parser("status", help="temps, humidity, setpoints, mode, what it's doing")
+    sp.add_parser("status", help="temperature, humidity, setpoints, mode and system status")
     sp.add_parser("list", help="list thermostats and zones")
-    a = sp.add_parser("set", help="set temperature (e.g. 'trane set 72' or --heat 68 --cool 76)")
+    a = sp.add_parser("set", help="set setpoints (e.g. 'trane set 72' or --heat 68 --cool 76)")
     a.add_argument("temp", type=float, nargs="?", help="target for the current mode")
     a.add_argument("--heat", type=float)
     a.add_argument("--cool", type=float)
@@ -378,7 +378,7 @@ def main():
     sp.add_parser("resume", help="return to schedule")
     a = sp.add_parser("preset", help="set preset (Home/Away/Sleep...)")
     a.add_argument("preset")
-    a = sp.add_parser("runtime", help="heating/cooling runtime hours (and est. kWh)")
+    a = sp.add_parser("runtime", help="runtime hours per stage, with optional kWh estimate")
     a.add_argument("report", nargs="?", choices=["daily", "monthly"], default="daily")
     a.add_argument("--no-kwh", action="store_true")
     a = sp.add_parser("events", help="recent thermostat event log")
@@ -394,8 +394,8 @@ def main():
 
     a = sp.add_parser("schedule", help="list, show, edit, create and apply schedules")
     ss = a.add_subparsers(dest="action", required=True)
-    ss.add_parser("list", help="saved schedules, marking the one the thermostat is running")
-    b = ss.add_parser("show", help="show a schedule (default: what the thermostat is running)")
+    ss.add_parser("list", help="list saved schedules and mark the active one")
+    b = ss.add_parser("show", help="show a saved schedule (default: the active schedule)")
     b.add_argument("name", nargs="?", help="saved schedule name or id")
     ss.add_parser("backup", help="save all schedules to a JSON file")
 
@@ -407,7 +407,7 @@ def main():
         b.add_argument("--heat", type=float, help="heat setpoint")
         b.add_argument("--cool", type=float, help="cool setpoint")
         b.add_argument("--apply", action="store_true",
-                       help="also send it to the thermostat and confirm")
+                       help="apply to the thermostat after saving")
     b = ss.add_parser("set", help="edit a saved schedule")
     b.add_argument("name", help="saved schedule name or id")
     edit_opts(b)
@@ -415,7 +415,7 @@ def main():
     b.add_argument("source", help="schedule to copy (name or id)")
     b.add_argument("name", help="name for the new schedule")
     edit_opts(b)
-    b = ss.add_parser("apply", help="send a saved schedule to the thermostat and confirm")
+    b = ss.add_parser("apply", help="apply a saved schedule to the thermostat and verify it")
     b.add_argument("name", help="saved schedule name or id")
 
     args = p.parse_args()
